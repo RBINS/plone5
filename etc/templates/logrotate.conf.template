@@ -1,0 +1,50 @@
+rotate 4
+weekly
+create
+compress
+delaycompress
+
+${buildout:directory}/var/log/zeoserver-plone5.log {
+    su ${v:sys-user} ${v:sys-group}
+    compress
+    rotate 10
+    daily
+    notifempty
+    size 10M
+    postrotate
+        /bin/kill -USR2 $(cat ${buildout:directory}/var/zeoserver.pid)
+    endscript
+}
+
+${buildout:directory}/var/log/instance1-plone5.log
+${buildout:directory}/var/log/instance1-plone5-Z2.log
+${buildout:directory}/var/log/instance1-plone5-access-Z2.log{
+    su ${v:sys-user} ${v:sys-group}
+    compress
+    rotate 10
+    daily
+    notifempty
+    size 10M
+    postrotate
+        /bin/kill -USR2 $(cat ${buildout:directory}/var/instance1-plone5.pid)
+    endscript
+}
+
+
+${buildout:directory}/var/log/supervisor*.log {
+    su ${v:sys-user} ${v:sys-group}
+    compress
+    rotate 10
+    daily
+    notifempty
+    size 10M
+    sharedscripts
+    missingok
+    copytruncate
+}
+
+
+[logrotate.conf]
+recipe = collective.recipe.template
+input =  ${buildout:directory}/etc/templates/logrotate.conf.template
+output = ${buildout:directory}/etc/logrotate.conf
